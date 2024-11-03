@@ -10,7 +10,7 @@ import SwiftUI
 @Observable
 class HomeViewModel {
     
-    var currentUser: User? = nil
+    var currentUser: User?
     
     var selectedCategory: Category
     
@@ -18,7 +18,7 @@ class HomeViewModel {
         selectedCategory = .all
     }
     
-     func getCurrentUser() async{
+    func getCurrentUser() async {
         
         do {
             currentUser = try await DatabaseHelper.getOneUser()
@@ -28,8 +28,6 @@ class HomeViewModel {
     }
 }
 
-
-
 struct HomeView: View {
     @State var viewModel = HomeViewModel()
     
@@ -37,43 +35,66 @@ struct HomeView: View {
         ZStack {
             Color.scBlack.ignoresSafeArea()
             
-            HStack {
+            ScrollView(.vertical) {
                 
-                if let user = viewModel.currentUser {
+                LazyVStack(spacing: 1, pinnedViews: [.sectionHeaders]) {
                     
-                    ImageLoaderView(urlString: user.image)
-                        .frame(width: 30, height: 30)
-                        .background(.scWhite)
-                        .clipShape(Circle())
-                        .onTapGesture {}
-                }
-                
-                ScrollView(.horizontal) {
-                    
-                    
-                    HStack(spacing: 8) {
-                        ForEach(Category.allCases, id: \.self) { category in
-                            SCCategoryCell(title: "\(category.rawValue.capitalized)", isSelected: viewModel.selectedCategory == category)
-                                .onTapGesture {
-                                    viewModel.selectedCategory = category
-                                }
+                    Section {
+                        ForEach(0 ..< 20) { _ in
+                            Rectangle()
+                                .frame(width: 150, height: 150)
                         }
+                    } header: {
+                        header
                     }
-                    
-                    
-                    
-                }.scrollIndicators(.hidden)
+
+                }.padding(.top, 8)
                 
-                
-                
-                
-            }
+            }.scrollIndicators(.hidden)
+                .clipped()
+          
         }.task {
-             await viewModel.getCurrentUser()
+            await viewModel.getCurrentUser()
         }
+        .toolbarVisibility(.hidden, for: .navigationBar)
     }
 }
 
 #Preview {
     HomeView()
+}
+
+extension HomeView {
+    
+    private var header: some View {
+        HStack(spacing: 0) {
+                        
+            ZStack {
+                if let user = viewModel.currentUser {
+                                                
+                    ImageLoaderView(urlString: user.image)
+                                  
+                        .background(.scWhite)
+                        .clipShape(Circle())
+                        .onTapGesture {}
+                }
+            }.frame(width: 35, height: 35)
+                        
+            ScrollView(.horizontal) {
+                            
+                HStack(spacing: 8) {
+                    ForEach(Category.allCases, id: \.self) { category in
+                        SCCategoryCell(title: "\(category.rawValue.capitalized)", isSelected: viewModel.selectedCategory == category)
+                            .onTapGesture {
+                                viewModel.selectedCategory = category
+                            }
+                    }
+                }.padding(.horizontal, 16)
+                            
+            }.scrollIndicators(.hidden)
+                        
+        }.padding(.vertical, 24)
+            .padding(.leading, 8)
+            .background(Color.scBlack)
+    }
 }
