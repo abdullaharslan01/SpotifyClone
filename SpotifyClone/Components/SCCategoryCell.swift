@@ -8,21 +8,26 @@
 import SwiftUI
 
 struct SCCategoryCell: View {
-    
-    
-    var title:String = "All"
-    var isSelected:Bool = false
-    
-    
+
+    var title: String = "All"
+    var isSelected: Bool = false
+
     var body: some View {
-        Text(title)
+        Text(self.title)
             .font(.callout)
             .frame(minWidth: 35)
             .padding(.vertical, 8)
             .padding(.horizontal, 10)
-            .background(isSelected ? .scGreen : .scDarkGray)
-            .foregroundStyle(isSelected ? .scBlack : .scWhite)
+            .themeColors(isSelected: isSelected)
             .cornerRadius(16)
+
+    }
+}
+
+extension View {
+    func themeColors(isSelected: Bool) -> some View {
+        self.background(isSelected ? .scGreen : .scDarkGray)
+            .foregroundStyle(isSelected ? .scBlack : .scWhite)
     }
 }
 
@@ -33,8 +38,8 @@ struct SCCategoryCell: View {
             SCCategoryCell(title: "All")
             SCCategoryCell(title: "Music", isSelected: true)
             SCCategoryCell(title: "Title goes here", isSelected: true)
-     
+
         }
-        
+
     }
 }

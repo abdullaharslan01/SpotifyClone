@@ -31,6 +31,12 @@ struct Product: Codable, Identifiable {
     let meta: Meta
     let images: [String]
     let thumbnail: String
+    
+    var firstImage: String {
+        images.first ?? Constants.randomImage
+    }
+    
+    
 }
 
 enum AvailabilityStatus: String, Codable {
