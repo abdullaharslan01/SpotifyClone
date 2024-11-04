@@ -27,3 +27,6 @@ struct User: Codable, Identifiable {
     let ein, ssn, userAgent: String
 }
 
+extension User {
+    static let mock = User(id: 1, firstName: "Abdullah", lastName: "Arslan", maidenName: "", age: 24, email: "abdullaharslan1473@gmail.com", phone: "", username: "abdullaharslan01", password: "", birthDate: "", image: "", bloodGroup: "", height: 1, weight: 1, eyeColor: "", ip: "", macAddress: "", university: "", ein: "", ssn: "", userAgent: "")
+}

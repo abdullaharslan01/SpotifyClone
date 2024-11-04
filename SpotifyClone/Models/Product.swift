@@ -18,17 +18,10 @@ struct Product: Codable, Identifiable {
     let title, description: String
     let price, discountPercentage, rating: Double
     let stock: Int
-    let tags: [String]
     let brand: String?
     let sku: String
     let weight: Int
-    let dimensions: Dimensions
-    let warrantyInformation, shippingInformation: String
-    let availabilityStatus: AvailabilityStatus
-    let reviews: [Review]
-    let returnPolicy: ReturnPolicy
     let minimumOrderQuantity: Int
-    let meta: Meta
     let images: [String]
     let thumbnail: String
     
@@ -87,4 +80,8 @@ struct ProductRow: Identifiable {
     let id = UUID().uuidString
     let title: String
     let products: [Product]
+}
+
+extension Product {
+    static let mock = Product(id: 1, title: "Example product", description: "This is some mock product descpirit ", price: 99, discountPercentage: 15, rating: 4.5, stock: 50, brand: "Apple",  sku: "", weight: 2, minimumOrderQuantity: 3, images: [Constants.randomImage, Constants.randomImage], thumbnail: "")
 }

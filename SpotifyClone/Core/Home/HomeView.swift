@@ -90,7 +90,7 @@ extension HomeView {
             newReleaseCellModel: NewReleaseCellModel(
                 imageName: product.firstImage,
                 headline: product.brand,
-                subheadline: product.availabilityStatus.rawValue,
+                subheadline: product.id.description,
                 title: product.title,
                 subtitle: product.description,
                 onAddToPlayListPressed: {},
