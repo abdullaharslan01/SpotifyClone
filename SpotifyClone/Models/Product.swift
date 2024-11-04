@@ -36,6 +36,9 @@ struct Product: Codable, Identifiable {
         images.first ?? Constants.randomImage
     }
     
+    var _brand: String {
+        brand ?? "N/A"
+    }
     
 }
 
@@ -72,10 +75,16 @@ enum ReturnPolicy: String, Codable {
     case the90DaysReturnPolicy = "90 days return policy"
 }
 
-// MARK: - Review
 struct Review: Codable {
     let rating: Int
     let comment: String
     let date: CreatedAt
     let reviewerName, reviewerEmail: String
+}
+
+
+struct ProductRow: Identifiable {
+    let id = UUID().uuidString
+    let title: String
+    let products: [Product]
 }

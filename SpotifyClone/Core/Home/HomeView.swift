@@ -8,40 +8,6 @@
 import SwiftfulUI
 import SwiftUI
 
-@Observable
-class HomeViewModel {
-    
-    var currentUser: User?
-    
-    var selectedCategory: Category
-    
-    var products: [Product] = []
-    
-    init() {
-        selectedCategory = .all
-    }
-    
-    func getCurrentUser() async {
-        
-        do {
-            currentUser = try await DatabaseHelper.getOneUser()
-        } catch {
-            print("\(error.localizedDescription)")
-        }
-    }
-    
-    func getAllProducts() async {
-            
-        do {
-     
-            products = try await Array(DatabaseHelper.getProducts().shuffled().prefix(6))
-            
-        } catch {
-            print("\(error.localizedDescription)")
-        }
-    }
-}
-
 struct HomeView: View {
     @State var viewModel = HomeViewModel()
     private var recentsCellGridItems: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
@@ -56,13 +22,18 @@ struct HomeView: View {
                     
                     Section {
                         VStack(spacing: 25) {
+                            
                             recentsSection
+                                .padding(.horizontal, 16)
                             
                             if let product = viewModel.products.first {
                                 newReleaseSection(product: product)
+                                    .padding(.horizontal, 16)
                             }
                             
-                        }.padding(.horizontal, 16)
+                            listRows
+                            
+                        }
                         
                     } header: {
                         header
@@ -87,12 +58,39 @@ struct HomeView: View {
 
 extension HomeView {
     
+    private var listRows: some View {
+        ForEach(viewModel.productRows) { row in
+            VStack(spacing: 8) {
+                Text(row.title)
+                    .font(.title)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.scWhite)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                                                                            
+                ScrollView(.horizontal) {
+                                                                            
+                    HStack(alignment: .top, spacing: 16) {
+                        ForEach(row.products) { product in
+                            SCImageTitleRowCell(titleRowCellModel: ImageTitleRowModel(imageSize: 100, imageName: product.firstImage, title: product.title))
+                                .asButton(.press) {
+                                    
+                                }
+                                                                                    
+                        }
+                    }.padding(.horizontal, 16)
+                                                                            
+                }.scrollIndicators(.hidden)
+            }
+        }
+    }
+    
     private func newReleaseSection(product: Product) -> some View {
         SCNewReleaseCell(
             newReleaseCellModel: NewReleaseCellModel(
                 imageName: product.firstImage,
                 headline: product.brand,
-                subheadline: product.price.description,
+                subheadline: product.availabilityStatus.rawValue,
                 title: product.title,
                 subtitle: product.description,
                 onAddToPlayListPressed: {},
@@ -106,6 +104,9 @@ extension HomeView {
             ForEach(viewModel.products) { product in
                                            
                 SCRecentsCell(imageName: product.firstImage, title: product.title)
+                    .asButton(.press) {
+                        
+                    }
                                             
             }
         }
