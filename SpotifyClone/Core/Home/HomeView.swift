@@ -5,10 +5,14 @@
 //  Created by abdullah on 02.11.2024.
 //
 
+import SwiftfulRouting
 import SwiftfulUI
 import SwiftUI
 
 struct HomeView: View {
+    
+    @Environment(\.router) var router
+    
     @State var viewModel = HomeViewModel()
     private var recentsCellGridItems: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
     
@@ -53,7 +57,10 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    RouterView { _ in
+        
+        HomeView()
+    }
 }
 
 extension HomeView {
@@ -74,7 +81,7 @@ extension HomeView {
                         ForEach(row.products) { product in
                             SCImageTitleRowCell(titleRowCellModel: ImageTitleRowModel(imageSize: 100, imageName: product.firstImage, title: product.title))
                                 .asButton(.press) {
-                                    
+                                    goToPlayListView(product: product)
                                 }
                                                                                     
                         }
@@ -94,7 +101,9 @@ extension HomeView {
                 title: product.title,
                 subtitle: product.description,
                 onAddToPlayListPressed: {},
-                onPlayPressed: {}
+                onPlayPressed: {
+                    goToPlayListView(product: product)
+                }
             )
         )
     }
@@ -105,10 +114,20 @@ extension HomeView {
                                            
                 SCRecentsCell(imageName: product.firstImage, title: product.title)
                     .asButton(.press) {
-                        
+                        goToPlayListView(product: product)
                     }
                                             
             }
+        }
+    }
+    
+    private func goToPlayListView(product: Product) {
+        
+        guard let currentUser = viewModel.currentUser else { return }
+        
+        router.showScreen(.push) { _ in
+            
+            PlayListView(product: product, user: currentUser)
         }
     }
     
@@ -122,7 +141,9 @@ extension HomeView {
                                   
                         .background(.scWhite)
                         .clipShape(Circle())
-                        .onTapGesture {}
+                        .onTapGesture {
+                            router.dismissScreen()
+                        }
                 }
             }.frame(width: 35, height: 35)
                         
@@ -133,6 +154,11 @@ extension HomeView {
                         SCCategoryCell(title: "\(category.rawValue.capitalized)", isSelected: viewModel.selectedCategory == category)
                             .onTapGesture {
                                 viewModel.selectedCategory = category
+                                
+                                // I am simulating just show that buttons actions.
+                                Task {
+                                    await viewModel.getAllProducts()
+                                }
                             }
                     }
                 }.padding(.horizontal, 16)
